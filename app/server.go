@@ -18,10 +18,19 @@ func main() {
 
 	// Accept incoming connections
 	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
+	for {
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			continue
+		}
+		go handleRequest(conn)
 	}
-	conn.Write([]byte("+PONG\r\n"))
+}
+func handleRequest(conn net.Conn) {
+	buf := make([]byte, 1024)
+	_, err := conn.Read(buf)
+	if err != nil {
+		fmt.Println("Error reading:", err.Error())
+	}
 	conn.Write([]byte("+PONG\r\n"))
 }
