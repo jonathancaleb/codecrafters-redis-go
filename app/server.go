@@ -35,14 +35,17 @@ func main() {
 func handleRequest(conn net.Conn) {
 	defer conn.Close()
 
-	// Buffer to read data
-	buf := make([]byte, 1024)
-	_, err := conn.Read(buf)
-	if err != nil {
-		fmt.Println("Error reading:", err.Error())
-		return
-	}
+	// Keep reading data until the client disconnects
+	for {
+		// Buffer to read data
+		buf := make([]byte, 1024)
+		_, err := conn.Read(buf)
+		if err != nil {
+			fmt.Println("Error reading:", err.Error())
+			return // Exit the goroutine if an error occurs
+		}
 
-	// Send hardcoded response
-	conn.Write([]byte("+PONG\r\n"))
+		// Send hardcoded PONG response for PING
+		conn.Write([]byte("+PONG\r\n"))
+	}
 }
